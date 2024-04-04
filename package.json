@@ -2,7 +2,7 @@
     "name": "vscode-motion",
     "displayName": "vscode-motion",
     "description": "",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "repository": "https://github.com/Foroughi/vscode-motion-ext",
     "publisher": "AliForoughi",
     "engines": {
@@ -11,80 +11,32 @@
     "categories": [
         "Keymaps"
     ],
-    "activationEvents": [],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "vmotion.jumpTo",
-                "title": "Jump to"
+                "command": "vmotion",
+                "title": "activate motion"
+            },
+            {
+                "command": "cancel vmotion",                
+                "title": "cancel current motion capture"
             }
+
         ],
-        "keybindings": [
+        "keybindings": [            
             {
-                "command": "vmotion.jumpTo",
-                "args": {
-                    "include": true,
-                    "pattern": "'",
-                    "direction": ">"
-                },
-                "key": "ctrl+m ] ] '",
-                "mac": "cmd+m ] ] '",
+                "command": "vmotion",                
+                "key": "ctrl+m",
+                "mac": "cmd+m",
                 "when": "editorFocus"
             },
             {
-                "command": "vmotion.jumpTo",
-                "args": {
-                    "include": false,
-                    "pattern": "'",
-                    "direction": ">"
-                },
-                "key": "ctrl+m ] '",
-                "mac": "cmd+m ] '",
-                "when": "editorFocus"
-            },
-            {
-                "command": "vmotion.jumpTo",
-                "args": {
-                    "include": true,
-                    "pattern": "'",
-                    "direction": "<"
-                },
-                "key": "ctrl+m [ [ '",
-                "mac": "cmd+m [ [ '",
-                "when": "editorFocus"
-            },
-            {
-                "command": "vmotion.jumpTo",
-                "args": {
-                    "include": false,
-                    "pattern": "'",
-                    "direction": "<"
-                },
-                "key": "ctrl+m [ '",
-                "mac": "cmd+m [ '",
-                "when": "editorFocus"
-            },
-            {
-                "command": "vmotion.jumpTo",
-                "args": {
-                    "include": true,
-                    "pattern": "'",
-                    "direction": "|"
-                },
-                "key": "ctrl+m shift+\\ shift+\\ '",
-                "mac": "cmd+m shift+\\ '",
-                "when": "editorFocus"
-            },
-            {
-                "command": "vmotion.jumpTo",
-                "args": {
-                    "include": false,
-                    "pattern": "'",
-                    "direction": "|"
-                },
-                "key": "ctrl+m shift+\\ '",
-                "mac": "cmd+m shift+\\ '",
+                "command": "cancel vmotion",                
+                "key": "escape",                
                 "when": "editorFocus"
             }
         ]
