@@ -3,11 +3,13 @@
     "displayName": "vscode-motion",
     "description": "",
     "version": "0.0.1",
+    "repository": "https://github.com/Foroughi/vscode-motion-ext",
+    "publisher": "AliForoughi",
     "engines": {
         "vscode": "^1.87.0"
     },
     "categories": [
-        "Other"
+        "Keymaps"
     ],
     "activationEvents": [],
     "main": "./out/extension.js",
@@ -93,7 +95,8 @@
         "watch": "tsc -watch -p ./",
         "pretest": "npm run compile && npm run lint",
         "lint": "eslint src --ext ts",
-        "test": "vscode-test"
+        "test": "vscode-test",
+        "publish": "vsce package && vsce publish"
     },
     "devDependencies": {
         "@types/vscode": "^1.87.0",
