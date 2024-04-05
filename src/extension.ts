@@ -7,25 +7,38 @@ export interface IJump {
     direction: "left" | "right" | "both"
 }
 
-export function activate(context: vscode.ExtensionContext) {
+let motionStatusBarItem: vscode.StatusBarItem;
+var capture = false;
+var capturedKeys = "";
+var interval: any;
 
-    var capture = false;
-    var capturedKeys = "";
+export function activate({ subscriptions }: vscode.ExtensionContext) {
 
-    var interval = setInterval(() => {
+    motionStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+    subscriptions.push(motionStatusBarItem);
+
+    updateStatusBarItem();
+
+    interval = setInterval(() => {
 
         capture = false;
         capturedKeys = "";
+        updateStatusBarItem();
 
     }, 3000);
 
-    context.subscriptions.push(vscode.commands.registerCommand('vmotion', () => {
+    subscriptions.push(vscode.commands.registerCommand('vmotion', () => {
         capture = true;
+        updateStatusBarItem();
+
     }));
 
-    context.subscriptions.push(vscode.commands.registerCommand('cancel vmotion', () => {
+    subscriptions.push(vscode.commands.registerCommand('cancel vmotion', () => {
         capture = false;
+        updateStatusBarItem();
     }));
+
+   
 
     vscode.commands.registerCommand("type", async (e) => {
         if (vscode.window.activeTextEditor) {
@@ -36,6 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
             if (capture) {
 
                 capturedKeys += value;
+                updateStatusBarItem();
                 var motionFound = false;
 
                 if (capturedKeys.startsWith("d]") && capturedKeys.length > 2) {
@@ -105,8 +119,11 @@ export function activate(context: vscode.ExtensionContext) {
                 if (motionFound) {
                     console.log("motion executed : " + capturedKeys);
                     capturedKeys = "";
+                    
                     capture = false;
                 }
+
+                updateStatusBarItem();
 
                 return;
             }
@@ -121,7 +138,31 @@ export function activate(context: vscode.ExtensionContext) {
     });
 }
 
-export function deactivate() { }
+export function deactivate() {
+
+    interval.unref();
+
+}
+
+function updateStatusBarItem(): void {
+
+    
+    if (capture) {
+        
+        motionStatusBarItem.show();     
+           
+        motionStatusBarItem.text = "$(sync~spin) Motion : " + capturedKeys;
+    }
+    else {
+        motionStatusBarItem.hide();        
+        motionStatusBarItem.text = "";
+    }
+
+    
+
+}
+
+
 
 function findNext(editor: vscode.TextEditor, args: IJump) {
 

@@ -21,3 +21,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 - v0.0.3 Defined new shortcuts to select/delete a portion of the code
+
+## [0.0.4] - 2024-05-05
+
+### Added
+- v0.0.4 Added an statusbar item to show captured keys

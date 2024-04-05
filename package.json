@@ -2,7 +2,7 @@
     "name": "vscode-motion",
     "displayName": "vscode-motion",
     "description": "This extension brings keyboard motions to your vs code",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "repository": "https://github.com/Foroughi/vscode-motion-ext",
     "publisher": "AliForoughi",
     "engines": {
@@ -15,7 +15,7 @@
         "onStartupFinished"
     ],
     "extensionKind": [
-        "ui"
+        "ui"        
     ],
     "main": "./out/extension.js",
     "contributes": {
