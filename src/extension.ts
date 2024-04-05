@@ -11,6 +11,8 @@ let motionStatusBarItem: vscode.StatusBarItem;
 var capture = false;
 var capturedKeys = "";
 var interval: any;
+const starters = "{([<";
+const enders = "})]>";
 
 export function activate({ subscriptions }: vscode.ExtensionContext) {
 
@@ -38,7 +40,7 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
         updateStatusBarItem();
     }));
 
-   
+
 
     vscode.commands.registerCommand("type", async (e) => {
         if (vscode.window.activeTextEditor) {
@@ -119,7 +121,7 @@ export function activate({ subscriptions }: vscode.ExtensionContext) {
                 if (motionFound) {
                     console.log("motion executed : " + capturedKeys);
                     capturedKeys = "";
-                    
+
                     capture = false;
                 }
 
@@ -146,25 +148,30 @@ export function deactivate() {
 
 function updateStatusBarItem(): void {
 
-    
+
     if (capture) {
-        
-        motionStatusBarItem.show();     
-           
+
+        motionStatusBarItem.show();
+
         motionStatusBarItem.text = "$(sync~spin) Motion : " + capturedKeys;
     }
     else {
-        motionStatusBarItem.hide();        
+        motionStatusBarItem.hide();
         motionStatusBarItem.text = "";
     }
 
-    
+
 
 }
 
 
 
 function findNext(editor: vscode.TextEditor, args: IJump) {
+
+    if(args.direction === "both" && enders.indexOf(args.pattern) === -1)
+    {
+        args.pattern = getPairChar(args.pattern);
+    }
 
     var startingPos = editor.document.offsetAt(editor.selection.start);
 
@@ -176,11 +183,19 @@ function findNext(editor: vscode.TextEditor, args: IJump) {
         i += args.pattern.length;
     }
 
-    return sliceContent.startsWith(args.pattern) ? editor.document.positionAt(args.include ? i + 1 : i) : editor.selection.start;
+    //return editor.document.positionAt(args.include ? i + 1 : i);
+    return args.direction !== "both" || sliceContent.startsWith(args.pattern)  ? editor.document.positionAt(args.include ? i + 1 : i) : editor.selection.start;
 }
 
 function findPrevious(editor: vscode.TextEditor, args: IJump) {
 
+    if(args.direction === "both" && starters.indexOf(args.pattern) === -1)
+    {
+        args.pattern = getPairChar(args.pattern);
+    }
+    
+    
+    
     var startingPos = editor.document.offsetAt(editor.selection.start);
 
     var sliceContent = editor.document.getText().slice(0, startingPos);
@@ -191,7 +206,8 @@ function findPrevious(editor: vscode.TextEditor, args: IJump) {
         i -= args.pattern.length;
     }
 
-    return sliceContent.endsWith(args.pattern) ? editor.document.positionAt(args.include ? i - 1 : i) : editor.selection.start;
+    //return editor.document.positionAt(0);
+    return args.direction !== "both" || sliceContent.endsWith(args.pattern) ? editor.document.positionAt(args.include ? i - 1 : i) : editor.selection.start;
 
 }
 
@@ -254,6 +270,7 @@ function JumpTo(args: IJump) {
 
 function SelectTo(args: IJump) {
 
+    console.log(args);
     if (!args.include) {
         args.include = false;
     }
@@ -277,12 +294,15 @@ function SelectTo(args: IJump) {
     var loc = sel.start;
 
     if (args.direction === "right") {
+       
         editor.selection = new vscode.Selection(loc, findNext(editor, args));
     }
     else if (args.direction === "left") {
         editor.selection = new vscode.Selection(loc, findPrevious(editor, args));
     }
     else {
+    
+        
         editor.selection = new vscode.Selection(findPrevious(editor, args), findNext(editor, args));
     }
 
@@ -301,4 +321,21 @@ function DeleteTo(args: IJump) {
 
 function getSelectionFromPosition(pos: vscode.Position) {
     return new vscode.Selection(pos, pos);
+}
+
+function getPairChar(char: string) {
+
+    switch (char) {
+
+        case "(": return ")";
+        case ")": return "(";
+        case "{": return "}";
+        case "}": return "{";
+        case "[": return "]";
+        case "<": return ">";
+        case ">": return "<";        
+        default: return char;
+    }
+
+
 }
