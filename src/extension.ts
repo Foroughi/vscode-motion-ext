@@ -38,7 +38,50 @@ export function activate(context: vscode.ExtensionContext) {
                 capturedKeys += value;
                 var motionFound = false;
 
-                if (capturedKeys.startsWith("]") && capturedKeys.length > 1) {
+                if (capturedKeys.startsWith("d]") && capturedKeys.length > 2) {
+                    DeleteTo({ include: false, direction: "right", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+                else if (capturedKeys.startsWith("d[") && capturedKeys.length > 2) {
+                    DeleteTo({ include: false, direction: "left", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+                else if (capturedKeys.startsWith("d>") && capturedKeys.length > 2) {
+                    DeleteTo({ include: true, direction: "right", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+                else if (capturedKeys.startsWith("d<") && capturedKeys.length > 2) {
+                    DeleteTo({ include: true, direction: "left", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+                else if (capturedKeys.startsWith("d|") && capturedKeys.length > 2) {
+                    DeleteTo({ include: false, direction: "both", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+
+
+                else if (capturedKeys.startsWith("s]") && capturedKeys.length > 2) {
+                    SelectTo({ include: false, direction: "right", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+                else if (capturedKeys.startsWith("s[") && capturedKeys.length > 2) {
+                    SelectTo({ include: false, direction: "left", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+                else if (capturedKeys.startsWith("s>") && capturedKeys.length > 2) {
+                    SelectTo({ include: true, direction: "right", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+                else if (capturedKeys.startsWith("s<") && capturedKeys.length > 2) {
+                    SelectTo({ include: true, direction: "left", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+                else if (capturedKeys.startsWith("s|") && capturedKeys.length > 2) {
+                    SelectTo({ include: false, direction: "both", pattern: capturedKeys[2] });
+                    motionFound = true;
+                }
+
+                else if (capturedKeys.startsWith("]") && capturedKeys.length > 1) {
                     JumpTo({ include: false, direction: "right", pattern: capturedKeys[1] });
                     motionFound = true;
                 }
@@ -165,6 +208,53 @@ function JumpTo(args: IJump) {
 
     console.log(args);
 
+
+}
+
+function SelectTo(args: IJump) {
+
+    if (!args.include) {
+        args.include = false;
+    }
+
+    if (!args.direction) {
+        args.direction = "both";
+    }
+
+    if (!args.pattern) {
+        return;
+    }
+
+
+    let editor = vscode.window.activeTextEditor;
+
+    if (!editor) {
+        return;
+    }
+
+    let sel = editor.selection;
+    var loc = sel.start;
+
+    if (args.direction === "right") {
+        editor.selection = new vscode.Selection(loc, findNext(editor, args));
+    }
+    else if (args.direction === "left") {
+        editor.selection = new vscode.Selection(loc, findPrevious(editor, args));
+    }
+    else {
+        editor.selection = new vscode.Selection(findPrevious(editor, args), findNext(editor, args));
+    }
+
+    console.log(args);
+
+
+}
+
+function DeleteTo(args: IJump) {
+
+    SelectTo(args);
+
+    vscode.commands.executeCommand("deleteRight");
 
 }
 
